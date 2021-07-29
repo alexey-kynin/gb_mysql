@@ -1,37 +1,36 @@
 /* 1. В базе данных shop и sample присутствуют одни и те же таблицы, учебной базы данных. Переместите запись id = 1 из таблицы shop.users в таблицу sample.users. Используйте транзакции.*/
 
+USE sample;
+DROP TABLE users;
+ 
+CREATE TABLE users(
+	id INT(10) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	name VARCHAR(255) NULL DEFAULT NULL COMMENT 'Имя покупателя',
+	birthday_at DATE NULL DEFAULT NULL COMMENT 'Дата рождения',
+	created_at  DATETIME NULL DEFAULT CURRENT_TIMESTAMP,
+	updated_at DATETIME NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
 
--- USE sample;
--- DROP TABLE users;
---  
--- CREATE TABLE users(
--- 	id INT(10) NOT NULL AUTO_INCREMENT PRIMARY KEY,
--- 	name VARCHAR(255) NULL DEFAULT NULL COMMENT 'Имя покупателя',
--- 	birthday_at DATE NULL DEFAULT NULL COMMENT 'Дата рождения',
--- 	created_at  DATETIME NULL DEFAULT CURRENT_TIMESTAMP,
--- 	updated_at DATETIME NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
--- );
--- 
--- SELECT * FROM users;
--- 
--- START TRANSACTION;
--- INSERT INTO sample.users SELECT * FROM shop.users WHERE id = 1;
--- COMMIT;
--- 
--- SELECT * FROM sample.users;
--- SELECT * FROM shop.users;
+SELECT * FROM users;
+
+START TRANSACTION;
+INSERT INTO sample.users SELECT * FROM shop.users WHERE id = 1;
+COMMIT;
+
+SELECT * FROM sample.users;
+SELECT * FROM shop.users;
 
 
 /* 2. Создайте представление, которое выводит название name товарной позиции из таблицы products и соответствующее название каталога name из таблицы catalogs.*/
--- USE shop;
--- 
--- CREATE OR REPLACE VIEW name_prod_catalog(prod_id, prod_name, cat_name) AS
--- SELECT p.id AS prod_id, p.name, cat.name
--- FROM products AS p
--- LEFT JOIN catalogs AS cat 
--- ON p.catalog_id = cat.id;
--- 
--- SELECT * FROM name_prod_catalog;
+USE shop;
+
+CREATE OR REPLACE VIEW name_prod_catalog(prod_id, prod_name, cat_name) AS
+SELECT p.id AS prod_id, p.name, cat.name
+FROM products AS p
+LEFT JOIN catalogs AS cat 
+ON p.catalog_id = cat.id;
+
+SELECT * FROM name_prod_catalog;
 
 
 
@@ -42,29 +41,29 @@
  * с 18:00 до 00:00 — "Добрый вечер", с 00:00 до 6:00 — "Доброй ночи".
 */
 
--- DROP FUNCTION IF EXISTS hello;
--- 
--- delimiter //
--- CREATE FUNCTION hello()
--- RETURNS TINYTEXT
--- BEGIN
--- 	DECLARE c_time TIME;
--- 	SET c_time = CURTIME();
--- 	CASE 
--- 		WHEN c_time BETWEEN '06:00:00' AND '12:00:00' THEN
--- 			RETURN 'Доброе утро';
--- 		WHEN c_time BETWEEN '12:00:00' AND '18:00:00' THEN
--- 			RETURN 'Добрый день';
--- 		WHEN c_time BETWEEN '18:00:00' AND '00:00:00' THEN
--- 			RETURN 'Добрый вечер';
--- 		ELSE
--- 			RETURN 'Доброй ночи';
--- 	END CASE;
--- END //
--- delimiter ;
--- 
--- CALL hello();
--- DROP FUNCTION IF EXISTS hello;
+DROP FUNCTION IF EXISTS hello;
+
+delimiter //
+CREATE FUNCTION hello()
+RETURNS TINYTEXT
+BEGIN
+	DECLARE c_time TIME;
+	SET c_time = CURTIME();
+	CASE 
+		WHEN c_time BETWEEN '06:00:00' AND '12:00:00' THEN
+			RETURN 'Доброе утро';
+		WHEN c_time BETWEEN '12:00:00' AND '18:00:00' THEN
+			RETURN 'Добрый день';
+		WHEN c_time BETWEEN '18:00:00' AND '00:00:00' THEN
+			RETURN 'Добрый вечер';
+		ELSE
+			RETURN 'Доброй ночи';
+	END CASE;
+END //
+delimiter ;
+
+CALL hello();
+DROP FUNCTION IF EXISTS hello;
 
 /* 
  * 2. В таблице products есть два текстовых поля: name с названием товара и description с его описанием. 
